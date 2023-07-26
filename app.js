@@ -47,10 +47,11 @@ app.post("/register", async (request, response) => {
         VALUES
         ('${username}','${name}','${hashedPassword}','${gender}','${location}');`;
       const jh = await db.run(query);
+      response.status(200);
       response.send("User created successfully");
     }
   } else {
-    response.status = 400;
+    response.status(400);
     response.send("User already exists");
   }
 });
@@ -67,15 +68,15 @@ app.post("/login", async (request, response) => {
   const hh = await db.get(query);
   console.log(hh);
   if (hh === undefined) {
-    response.status = 400;
+    response.status(400);
     response.send("Invalid user");
   } else {
     const check = await bcrypt.compare(password, hh.password);
     if (check) {
-      response.status = 200;
+      response.status(200);
       response.send("Login success!");
     } else {
-      response.status = 400;
+      response.status(400);
       response.send("Invalid password");
     }
   }
@@ -94,11 +95,11 @@ app.put("/change-password", async (request, response) => {
   const currentDetails = await db.get(query);
   const compare = await bcrypt.compare(oldPassword, currentDetails.password);
   if (lengthOfNewPasswordCheck < 5) {
-    response.status = 200;
+    response.status(400);
     response.send("Password is too short");
   } else {
     if (compare === false) {
-      response.status = 400;
+      response.status(400);
       response.send("Invalid current password");
     } else {
       const kj = await bcrypt.hash(newPassword, lengthOfNewPasswordCheck);
@@ -109,6 +110,7 @@ app.put("/change-password", async (request, response) => {
           password='${kj}';`;
       const k = await db.run(updateQuery);
       response.send("Password updated");
+      response.status(200);
     }
   }
 });
